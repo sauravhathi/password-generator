@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Password Generator</title>
+  </head>
+  <body class="text-white bg-gray-900">
+    <div
+      class="flex flex-col justify-center h-screen w:8/12 mx-auto md:w-5/12 p-4"
+    >
+      <div class="bg-slate-800 py-10 px-20 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-4 text-center text-slate-500">
+          Password Generator
+        </h1>
+        <p class="text-sm text-center text-slate-400 mb-6">
+          copy the password to clipboard by clicking on password field.
+        </p>
+        <div class="flex flex-col justify-center">
+          <div class="flex flex-col justify-center">
+            <label for="password" class="text-md font-semibold mt-4"
+              >Password</label
+            >
+            <input
+              type="text"
+              name="password"
+              id="password"
+              class="bg-slate-700 text-white p-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+              readonly
+            />
+            <p class="hidden text-red-500 text-sm mt-2" id="copied">
+              Copied to clipboard!
+            </p>
+          </div>
+          <div class="flex flex-col justify-center">
+            <label for="length" class="text-md font-semibold mt-4"
+              >Length</label
+            >
+            <input
+              type="number"
+              name="length"
+              id="length"
+              class="bg-slate-700 text-white p-2 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+              min="6"
+              value="6"
+            />
+            <p class="hidden text-red-500 text-sm mt-2" id="length-error">
+              Length must be between 6 and 20
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-10 mt-10">
+            <div class="flex flex-row justify-between space-x-2">
+              <div class="flex flex-col justify-center">
+                <label for="uppercase" class="text-md font-semibold"
+                  >Uppercase</label
+                >
+              </div>
+              <div class="flex flex-col justify-center">
+                <input
+                  type="checkbox"
+                  name="uppercase"
+                  id="uppercase"
+                  class="form-checkbox h-5 w-5 text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+                  checked
+                />
+              </div>
+            </div>
+            <div class="flex flex-row justify-between items-center space-x-2">
+              <div class="flex flex-col justify-center">
+                <label for="lowercase" class="text-md font-semibold"
+                  >Lowercase</label
+                >
+              </div>
+              <div class="flex flex-col justify-center">
+                <input
+                  type="checkbox"
+                  name="lowercase"
+                  id="lowercase"
+                  class="form-checkbox h-5 w-5 text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+                  checked
+                />
+              </div>
+            </div>
+            <div class="flex flex-row justify-between items-center space-x-2">
+              <div class="flex flex-col justify-center">
+                <label for="numbers" class="text-md font-semibold"
+                  >Numbers</label
+                >
+              </div>
+              <div class="flex flex-col justify-center">
+                <input
+                  type="checkbox"
+                  name="numbers"
+                  id="numbers"
+                  class="form-checkbox h-5 w-5 text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+                  checked
+                />
+              </div>
+            </div>
+            <div class="flex flex-row justify-between items-center space-x-2">
+              <div class="flex flex-col justify-center">
+                <label for="symbols" class="text-md font-semibold"
+                  >Symbols</label
+                >
+              </div>
+              <div class="flex flex-col justify-center">
+                <input
+                  type="checkbox"
+                  name="symbols"
+                  id="symbols"
+                  class="form-checkbox h-5 w-5 text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+                  checked
+                />
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col justify-center items-end mt-10">
+            <button
+              class="bg-slate-700 text-white font-semibold p-2 rounded-lg mt-4 focus:outline-none focus:ring-2 focus:ring-slate-50 focus:ring-opacity-50"
+              id="generate"
+            >
+              Generate Password
+            </button>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="text-center text-slate-400 mt-4"
+        id="checkAuthor"
+      >
+          Made with ❤️ by
+          <a href="https://github.com/sauravhathi"
+            >@sauravhathi</a
+          >
+      </footer>
+    </div>
+  </body>
+  <script>
+
+    // DOM Elements 
+    const resultEl = document.getElementById("password");
+    const lengthEl = document.getElementById("length");
+    const uppercaseEl = document.getElementById("uppercase");
+    const lowercaseEl = document.getElementById("lowercase");
+    const numbersEl = document.getElementById("numbers");
+    const symbolsEl = document.getElementById("symbols");
+    const generateEl = document.getElementById("generate");
+    const lengthError = document.getElementById("length-error");
+
+    // random functions 
+    const randomFunc = {
+      lower: getRandomLower,
+      upper: getRandomUpper,
+      number: getRandomNumber,
+      symbol: getRandomSymbol,
+    };
+
+    // set button background color 
+    lengthEl.addEventListener("input", () => {
+      if (lengthEl.value == "") {
+        generateEl.classList.remove("bg-slate-50", "text-slate-900");
+        generateEl.classList.add("bg-slate-700");
+      } else {
+        generateEl.classList.add("bg-slate-50", "text-slate-900");
+        generateEl.classList.remove("bg-slate-700");
+      }
+    });
+
+    // Generate event listener
+    generateEl.addEventListener("click", () => {
+      const length = +lengthEl.value;
+      const hasLower = lowercaseEl.checked;
+      const hasUpper = uppercaseEl.checked;
+      const hasNumber = numbersEl.checked;
+      const hasSymbol = symbolsEl.checked;
+
+      if (
+        hasLower == false &&
+        hasUpper == false &&
+        hasNumber == false &&
+        hasSymbol == false
+      ) {
+        alert("Please select at least one option");
+      } else if (length < 6) {
+        lengthError.classList.remove("hidden");
+      } else {
+        lengthError.classList.add("hidden");
+        resultEl.value = generatePassword(
+          hasLower,
+          hasUpper,
+          hasNumber,
+          hasSymbol,
+          length
+        );
+      }
+    });
+
+    // Generate password function
+    function generatePassword(lower, upper, number, symbol, length) {
+      let generatedPassword = "";
+      const typesCount = lower + upper + number + symbol;
+      const typesArr = [{ lower }, { upper }, { number }, { symbol }].filter(
+        (item) => Object.values(item)[0]
+      );
+      if (typesCount === 0) {
+        return "";
+      }
+      for (let i = 0; i < length; i += typesCount) {
+        typesArr.forEach((type) => {
+          const funcName = Object.keys(type)[0];
+          generatedPassword += randomFunc[funcName]();
+        });
+      }
+      const finalPassword = generatedPassword.slice(0, length);
+      return finalPassword;
+    }
+
+    // get random lowercase letter
+    function getRandomLower() {
+      return String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+    }
+    // get random uppercase letter
+    function getRandomUpper() {
+      return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+    }
+    // get random number
+    function getRandomNumber() {
+      return String.fromCharCode(Math.floor(Math.random() * 10) + 48);
+    }
+    // get random symbol
+    function getRandomSymbol() {
+      const symbols = "!@#$%^&*()~{}[]=<>?_-\/,.";
+      return symbols[Math.floor(Math.random() * symbols.length)];
+    }
+
+    // copy to clipboard
+    resultEl.addEventListener("click", () => {
+        // create a temporary textarea element
+      const textarea = document.createElement("textarea");
+      const password = resultEl.value;
+      if (!password) {
+        return;
+      }
+      textarea.value = password;
+      document.body.appendChild(textarea);
+      // select the textarea
+      textarea.select();
+      // copy to clipboard
+      document.execCommand("copy");
+      // remove the textarea from the DOM
+      textarea.remove();
+      document.getElementById("copied").classList.remove("hidden");
+      // hide the copied message after 2 seconds
+      setTimeout(() => {
+        document.getElementById("copied").classList.add("hidden");
+      }, 2000);
+    });
+    
+  </script>
+</html>
